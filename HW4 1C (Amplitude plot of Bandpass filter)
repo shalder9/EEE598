@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def transfer_function_magnitude(omega, R, L, C):
+    return (omega * R * C) / np.sqrt((omega * R * C) ** 2 + (omega ** 2 * L * C - 1) ** 2)
+
+def transfer_function_phase(omega, R, L, C):
+    return np.arctan((omega * R * C) / (omega ** 2 * L * C - 1)) * (180 / np.pi)  # Convert to degrees
+
+# Given values
+R = 10**4  # Ohms
+C = 10**-15  # Farads
+L = 10**-3  # Henrys
+
+# Compute resonance frequency
+omega_0 = 1 / np.sqrt(L * C)
+freq_0 = omega_0 / (2 * np.pi)  # Convert to Hz
+
+# Compute bandwidth
+BW = R / L
+omega_L = omega_0 - BW / 2
+omega_H = omega_0 + BW / 2
+freq_L = omega_L / (2 * np.pi)
+freq_H = omega_H / (2 * np.pi)
+
+# Frequency range
+frequencies = np.logspace(6, 12, 1000)  # Logarithmic scale from 10^6 to 10^12 Hz
+omega = 2 * np.pi * frequencies  # Convert to rad/s
+
+# Compute magnitude and phase
+magnitude = transfer_function_magnitude(omega, R, L, C)
+phase = transfer_function_phase(omega, R, L, C)
+
+# Plot magnitude
+plt.figure(figsize=(10, 5))
+plt.subplot(2, 1, 1)
+plt.loglog(frequencies, magnitude, label='|Gv(ω)|', color='b')
+plt.axvline(freq_0, color='r', linestyle='--', label=f'Resonance f0 = {freq_0:.2e} Hz')
+plt.axvline(freq_L, color='g', linestyle='--', label=f'ωL = {freq_L:.2e} Hz')
+plt.axvline(freq_H, color='g', linestyle='--', label=f'ωH = {freq_H:.2e} Hz')
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.title("Magnitude Response of Bandpass Filter")
+plt.legend()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+# Plot phase
+plt.subplot(2, 1, 2)
+plt.semilogx(frequencies, phase, label='∠Gv(ω)', color='g')
+plt.axvline(freq_0, color='r', linestyle='--', label=f'Resonance f0 = {freq_0:.2e} Hz')
+plt.axvline(freq_L, color='g', linestyle='--', label=f'ωL = {freq_L:.2e} Hz')
+plt.axvline(freq_H, color='g', linestyle='--', label=f'ωH = {freq_H:.2e} Hz')
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Phase (degrees)")
+plt.title("Phase Response of Bandpass Filter")
+plt.legend()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+plt.tight_layout()
+plt.show()
