@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def transfer_function_magnitude(omega, R, C, L):
+    return (omega * R * C) / np.sqrt((omega * R * C) ** 2 + (omega**2 * L * C - 1) ** 2)
+
+def transfer_function_phase(omega, R, C, L):
+    real_part = R
+    imag_part = omega * L - 1 / (omega * C)
+    return np.arctan2(-imag_part, real_part)
+
+# Given values
+R = 10**4  # Ohms
+C = 10**-15  # Farads
+L = 10**-3  # Henrys
+
+# Frequency range
+omega = np.logspace(3, 15, 1000)  # Logarithmically spaced points from 10^3 to 10^15 Hz
+
+# Compute magnitude and phase
+magnitude = transfer_function_magnitude(omega, R, C, L)
+phase = transfer_function_phase(omega, R, C, L)
+
+# Convert phase to degrees for better visualization
+phase_degrees = np.degrees(phase)
+
+# Plot magnitude response
+plt.figure(figsize=(10, 5))
+plt.loglog(omega, magnitude, label='|G_v(ω)|', color='b')
+plt.xlabel('Frequency (rad/s)')
+plt.ylabel('Magnitude')
+plt.title('Magnitude Response of $G_v(\omega)$')
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.legend()
+plt.show()
+
+# Plot phase response
+plt.figure(figsize=(10, 5))
+plt.semilogx(omega, phase_degrees, label='Phase of $G_v(\omega)$', color='r')
+plt.xlabel('Frequency (rad/s)')
+plt.ylabel('Phase (degrees)')
+plt.title('Phase Response of $G_v(\omega)$')
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.legend()
+plt.show()
